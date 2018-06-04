@@ -1,26 +1,28 @@
 #include "customer.h"
+#include "shop.h"
 
-Customer::Customer(std::string name)
+Customer::Customer(std::string name, Shop* shop)
     :mCustomerName(name)
-    ,mIsServed(false)
+    ,pBelongsToShop(shop)
 {
     mCustomerThread = std::thread(operating, this);
+    mCustomerThread.join();
 }
 
 void Customer::operating()
 {
-    while(!mIsServed)
-    {
-        //wait... sleep
-    }
+    getHaircut();
+    std::this_thread::sleep_for(std::chrono::seconds(1));
 }
 
 void Customer::getHaircut()
 {
-
+    cout << "Customer : " << mCustomerName << " - getHaircut()\n";
+    std::this_thread::sleep_for(std::chrono::seconds(3));
 }
 
 void Customer::balk()
 {
-    mCustomerThread.join();
+    cout << "Customer : " << mCustomerName << " - balk()";
 }
+

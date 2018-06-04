@@ -1,20 +1,27 @@
 #ifndef BARBER_H
 #define BARBER_H
 
+#include <iostream>
 #include <thread>
-#include <mutex>
+#include <chrono>
+
+using namespace std;
+
+class Shop;
 
 class Barber
 {
 public:
-    Barber();
-    void cutHair();
-    bool IsBarberBusy() { return mIsBusy; }
-    void operating();
+    Barber(Shop* shop);
+    void terminate();
 
 private:
-    bool mIsBusy;
     std::thread mBarberThread;
+    bool mAlive;
+    Shop* pBelongsToShop;
+
+    void cutHair();
+    void operating();
 };
 
 #endif // BARBER_H

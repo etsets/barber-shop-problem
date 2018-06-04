@@ -7,9 +7,11 @@ SOURCES += \
         main.cpp \
     barber.cpp \
     customer.cpp \
-    shop.cpp
+    shop.cpp \
+    semaphore.cpp
 
 HEADERS += \
     barber.h \
     customer.h \
-    shop.h
+    shop.h \
+    semaphore.h
