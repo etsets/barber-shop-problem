@@ -1,7 +1,7 @@
 #ifndef SEMAPHORE_H
 #define SEMAPHORE_H
 
-using namespace std;
+using namespace std; // EVA: Never do this in a header
 #include <mutex>
 
 class Semaphore

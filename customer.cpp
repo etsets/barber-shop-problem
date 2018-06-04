@@ -5,7 +5,8 @@ Customer::Customer(std::string name, Shop* shop)
     :mCustomerName(name)
     ,pBelongsToShop(shop)
 {
-    mCustomerThread = std::thread(operating, this);
+
+    //mCustomerThread = std::thread(operating, this);
     mCustomerThread.join();
 }
 
