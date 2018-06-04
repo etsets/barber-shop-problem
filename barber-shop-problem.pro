@@ -15,3 +15,9 @@ HEADERS += \
     customer.h \
     shop.h \
     semaphore.h
+
+QMAKE_CXXFLAGS += -Wall
+LIBS += -pthread
+
+# Even better we can enable this when we cleanup all warnings
+# QMAKE_CXXFLAGS += -Werror

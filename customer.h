@@ -5,7 +5,7 @@
 #include <thread>
 #include <chrono>
 
-using namespace std;
+using namespace std; // EVA: Never do this in a header
 
 class Shop;
 
