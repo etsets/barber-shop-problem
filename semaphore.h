@@ -3,18 +3,21 @@
 
 using namespace std;
 #include <mutex>
+#include <atomic>
+#include <condition_variable>
 
 class Semaphore
 {
 public:
     Semaphore(int initialValue);
 
-    void Increment();       // Signal()
-    void Decrement();       // Wait()
+    void Signal();       // Increment
+    void Wait();         // Decrement
 
 private:
-    int mSemaphoreValue;
+    std::atomic<int> mSemaphoreValue;
     std::mutex mMutexObject;
+    std::condition_variable mConditionVariable;
 };
 
 

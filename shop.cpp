@@ -3,24 +3,57 @@
 
 Shop::Shop(int mMaxChairs)
     :mMaxChairs(mMaxChairs)
-    ,mTheBarber(this)
-    ,mBarberSemaphore(0)
-    ,mCustomersSemaphore(0)
 {
-
+    mBarberSemaphore = new Semaphore(1);
+    mCustomersSemaphore = new Semaphore(0);
+    mTheBarber = new Barber(this, mBarberSemaphore, mCustomersSemaphore);
 }
 
-void Shop::newCustomer(std::string customerName)
+Shop::~Shop()
 {
-    mCustomersMapMutex.lock();
-    mTheCustomers.emplace(customerName, Customer(customerName, this));
-    mCustomersMapMutex.unlock();
+    if (mTheBarber != nullptr)
+    {
+        delete mTheBarber;
+    }
+
+    if (mBarberSemaphore != nullptr)
+    {
+        delete mBarberSemaphore;
+    }
+
+    if (mCustomersSemaphore != nullptr)
+    {
+        delete mCustomersSemaphore;
+    }
 }
 
-void Shop::cleanupCustomerGarbage(std::string customerName)
+void Shop::newCustomerArrives(std::string customerName)
 {
-    mCustomersMapMutex.lock();
-    mTheCustomers.erase(customerName);
-    mCustomersMapMutex.unlock();
+    mShopMutex.lock();
+    mTheCustomers.emplace_back(new Customer(customerName, this, mBarberSemaphore, mCustomersSemaphore));
+    mShopMutex.unlock();
+}
+
+bool Shop::emptySeatsExist()
+{
+    mShopMutex.lock();
+    bool returnValue = (mWaitingCustomers < mMaxChairs);
+    mShopMutex.unlock();
+
+    return returnValue;
+}
+
+void Shop::addWaitingCustomer()
+{
+    mShopMutex.lock();
+    mWaitingCustomers++;
+    mShopMutex.unlock();
+}
+
+void Shop::removeWaitingCustomer()
+{
+    mShopMutex.lock();
+    mWaitingCustomers--;
+    mShopMutex.unlock();
 }
 

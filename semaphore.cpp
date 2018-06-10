@@ -1,23 +1,24 @@
 #include "semaphore.h"
 
-
 Semaphore::Semaphore(int initialValue)
     :mSemaphoreValue(initialValue)
 {
-
 }
 
-void Semaphore::Increment() //Signal - Unlock
+void Semaphore::Signal() //Signal - Unlock
 {
     mSemaphoreValue++;
-    mMutexObject.unlock();
+    mConditionVariable.notify_all();
 }
 
-void Semaphore::Decrement() //Wait - Lock
+void Semaphore::Wait() //Wait - Lock
 {
     mSemaphoreValue--;
-    if (mSemaphoreValue < 0)
+    if (mSemaphoreValue >= 0)
     {
-        mMutexObject.lock();
+        return;
     }
+
+    std::unique_lock<std::mutex> lck(mMutexObject);
+    mConditionVariable.wait(lck);
 }

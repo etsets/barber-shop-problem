@@ -1,12 +1,21 @@
 #include "barber.h"
 #include "shop.h"
+#include <iostream>
+#include <chrono>
 
-Barber::Barber(Shop* shop)
+Barber::Barber(Shop* shop, Semaphore* barberNotifier, Semaphore* customersNotifier)
     :mAlive(true)
     ,pBelongsToShop(shop)
+    ,mBarberNotifier(barberNotifier)
+    ,mCustomersNotifier(customersNotifier)
 {
     mBarberThread = std::thread(operating, this);
     mBarberThread.join();
+}
+
+Barber::~Barber()
+{
+
 }
 
 void Barber::cutHair()
@@ -18,7 +27,11 @@ void Barber::operating()
 {
     while (mAlive)
     {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        mCustomersNotifier->Wait();
+        pBelongsToShop->removeWaitingCustomer();
+        mBarberNotifier->Signal();
+        cutHair();
+        std::this_thread::sleep_for(std::chrono::seconds(4));
     }
 }
 
