@@ -1,7 +1,6 @@
 #ifndef SEMAPHORE_H
 #define SEMAPHORE_H
 
-using namespace std;
 #include <mutex>
 #include <atomic>
 #include <condition_variable>

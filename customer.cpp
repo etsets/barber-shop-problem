@@ -3,19 +3,13 @@
 #include <iostream>
 #include <chrono>
 
-Customer::Customer(std::string name, Shop* shop, Semaphore* barberNotifier, Semaphore* customersNotifier)
+Customer::Customer(std::string name, Shop* shop)
     :mCustomerName(name)
     ,pBelongsToShop(shop)
-    ,mBarberNotifier(barberNotifier)
-    ,mCustomersNotifier(customersNotifier)
 {
+    mBarberNotifier = shop->getBarberSemaphore();
+    mCustomersNotifier = shop->getCustomersSemaphore();
     mCustomerThread = std::thread(operating, this);
-    mCustomerThread.join();
-}
-
-Customer::~Customer()
-{
-
 }
 
 void Customer::operating()
@@ -34,12 +28,17 @@ void Customer::operating()
 
 void Customer::getHaircut()
 {
-    cout << "Customer : " << mCustomerName << " - getHaircut()\n";
+    std::cout << "Customer : " << mCustomerName << " - getHaircut()\n";
     std::this_thread::sleep_for(std::chrono::seconds(3));
 }
 
 void Customer::balk()
 {
-    cout << "Customer : " << mCustomerName << " - balk()";
+    std::cout << "Customer : " << mCustomerName << " - balk()";
+}
+
+void Customer::joinThread()
+{
+    mCustomerThread.join();
 }
 

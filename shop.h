@@ -1,8 +1,6 @@
 #ifndef SHOP_H
 #define SHOP_H
 
-using namespace std;
-
 #include "semaphore.h"
 #include "barber.h"
 #include "customer.h"
@@ -19,6 +17,9 @@ public:
     bool emptySeatsExist();
     void addWaitingCustomer();
     void removeWaitingCustomer();
+    void joinThreads();
+    Semaphore* getBarberSemaphore() const { return mBarberSemaphore; }
+    Semaphore* getCustomersSemaphore() const { return mCustomersSemaphore; }
 
 private:
     int mMaxChairs;

@@ -8,7 +8,7 @@ Semaphore::Semaphore(int initialValue)
 void Semaphore::Signal() //Signal - Unlock
 {
     mSemaphoreValue++;
-    mConditionVariable.notify_all();
+    mConditionVariable.notify_one();
 }
 
 void Semaphore::Wait() //Wait - Lock

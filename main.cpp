@@ -23,5 +23,7 @@ int main()
         barberShop.newCustomerArrives(std::to_string(i));
     }
 
+    barberShop.joinThreads();
+
     return 0;
 }

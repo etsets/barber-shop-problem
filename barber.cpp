@@ -3,24 +3,20 @@
 #include <iostream>
 #include <chrono>
 
-Barber::Barber(Shop* shop, Semaphore* barberNotifier, Semaphore* customersNotifier)
+Barber::Barber(Shop* shop)
     :mAlive(true)
     ,pBelongsToShop(shop)
-    ,mBarberNotifier(barberNotifier)
-    ,mCustomersNotifier(customersNotifier)
 {
+    mBarberNotifier = shop->getBarberSemaphore();
+    mCustomersNotifier = shop->getCustomersSemaphore();
+
     mBarberThread = std::thread(operating, this);
-    mBarberThread.join();
-}
-
-Barber::~Barber()
-{
-
 }
 
 void Barber::cutHair()
 {
     std::cout << "Barber : cutHair()\n";
+    std::this_thread::sleep_for(std::chrono::seconds(4));
 }
 
 void Barber::operating()
@@ -31,11 +27,15 @@ void Barber::operating()
         pBelongsToShop->removeWaitingCustomer();
         mBarberNotifier->Signal();
         cutHair();
-        std::this_thread::sleep_for(std::chrono::seconds(4));
     }
 }
 
 void Barber::terminate()
 {
     mAlive = false;
+}
+
+void Barber::joinThread()
+{
+    mBarberThread.join();
 }

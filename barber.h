@@ -3,18 +3,15 @@
 
 #include <thread>
 
-using namespace std;
-
 class Shop;
 class Semaphore;
 
 class Barber
 {
 public:
-    Barber(Shop* shop, Semaphore* barberNotifier, Semaphore* customersNotifier);
-    ~Barber();
+    Barber(Shop* shop);
     void terminate();
-    void operating();
+    void joinThread();
 
 private:
     std::thread mBarberThread;
@@ -24,8 +21,8 @@ private:
     Semaphore* mBarberNotifier;
     Semaphore* mCustomersNotifier;
 
+    void operating();
     void cutHair();
-
 };
 
 #endif // BARBER_H

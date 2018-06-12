@@ -3,17 +3,14 @@
 
 #include <thread>
 
-using namespace std;
-
 class Shop;
 class Semaphore;
 
 class Customer
 {
 public:
-    Customer(std::string name, Shop* shop, Semaphore* barberNotifier, Semaphore* customersNotifier);
-    ~Customer();
-    void operating();
+    Customer(std::string name, Shop* shop);
+    void joinThread();
 
 private:
     std::string mCustomerName;
@@ -23,6 +20,7 @@ private:
     Semaphore* mBarberNotifier;
     Semaphore* mCustomersNotifier;
 
+    void operating();
     void getHaircut();  // Customer is served and occupies the chair
     void balk();        // Leave if no chair empty
 };
