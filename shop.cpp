@@ -3,17 +3,15 @@
 
 Shop::Shop(int mMaxChairs)
     :mMaxChairs(mMaxChairs)
+    ,mBarberSemaphore(1)
+    ,mCustomersSemaphore(0)
 {
-    mBarberSemaphore = new Semaphore(1);
-    mCustomersSemaphore = new Semaphore(0);
     mTheBarber = new Barber(this);
 }
 
 Shop::~Shop()
 {
     delete mTheBarber;
-    delete mBarberSemaphore;
-    delete mCustomersSemaphore;
 }
 
 void Shop::newCustomerArrives(std::string customerName)

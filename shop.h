@@ -18,8 +18,8 @@ public:
     void addWaitingCustomer();
     void removeWaitingCustomer();
     void joinThreads();
-    Semaphore* getBarberSemaphore() const { return mBarberSemaphore; }
-    Semaphore* getCustomersSemaphore() const { return mCustomersSemaphore; }
+    Semaphore* getBarberSemaphore() { return &mBarberSemaphore; }
+    Semaphore* getCustomersSemaphore() { return &mCustomersSemaphore; }
 
 private:
     int mMaxChairs;
@@ -29,8 +29,8 @@ private:
     std::list<Customer*> mTheCustomers;
 
     // Synchronization objects
-    Semaphore *mBarberSemaphore;
-    Semaphore *mCustomersSemaphore;
+    Semaphore mBarberSemaphore;
+    Semaphore mCustomersSemaphore;
 
     std::mutex mShopMutex;
 };

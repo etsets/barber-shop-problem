@@ -1,24 +1,30 @@
 #include "semaphore.h"
+#include <cassert>
 
 Semaphore::Semaphore(int initialValue)
     :mSemaphoreValue(initialValue)
 {
+    assert(initialValue >= 0);
 }
 
 void Semaphore::Signal() //Signal - Unlock
 {
+    std::lock_guard<std::mutex> lck(mMutexObject);
     mSemaphoreValue++;
-    mConditionVariable.notify_one();
+    if (mSemaphoreValue == 1)
+    {
+        mConditionVariable.notify_one();
+    }
 }
 
 void Semaphore::Wait() //Wait - Lock
 {
-    mSemaphoreValue--;
-    if (mSemaphoreValue >= 0)
+    std::lock_guard<std::mutex> lck(mMutexObject);
+    while (mSemaphoreValue < 0)
     {
-        return;
+        mConditionVariable.wait(lck);
     }
 
-    std::unique_lock<std::mutex> lck(mMutexObject);
-    mConditionVariable.wait(lck);
+    mSemaphoreValue--;
+    assert(mSemaphoreValue >= 0);
 }
