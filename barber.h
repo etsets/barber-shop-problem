@@ -10,11 +10,10 @@ class Semaphore;
 class Barber
 {
 public:
-    Barber(Shop* shop);
+    Barber();
     void joinThread();
-    bool stopRequested();
     void stop();
-
+    void setShop(Shop* shop) { pBelongsToShop = shop; }
 private:
     std::thread mBarberThread;
 
@@ -27,6 +26,7 @@ private:
 
     void operating();
     void cutHair();
+    bool stopRequested();
 };
 
 #endif // BARBER_H

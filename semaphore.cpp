@@ -20,7 +20,7 @@ void Semaphore::Signal() //Signal - Unlock
 void Semaphore::Wait() //Wait - Lock
 {
     std::unique_lock<std::mutex> lck(mMutexObject);
-    while (mSemaphoreValue < 0)
+    while (mSemaphoreValue <= 0)
     {
         mConditionVariable.wait(lck);
     }

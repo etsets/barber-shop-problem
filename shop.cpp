@@ -6,12 +6,11 @@ Shop::Shop(int mMaxChairs)
     ,mBarberSemaphore(1)
     ,mCustomersSemaphore(0)
 {
-    mTheBarber = new Barber(this);
+    mTheBarber.setShop(this);
 }
 
 Shop::~Shop()
 {
-    delete mTheBarber;
     mTheCustomers.clear();
 }
 
@@ -43,27 +42,25 @@ void Shop::removeWaitingCustomer()
 void Shop::clearFirstTerminatedCustomerFound()
 {
     std::lock_guard<std::mutex> lock(mShopMutex);
-    // Check if Customers have been finished
+    // Check if there exist any Customers have been finished
+    // and delete the first found
     auto it = mTheCustomers.begin();
-    Customer* c;
     for (;it != mTheCustomers.end(); ++it)
     {
-        if (!((*it)->isTerminated()))
+        if ((*it)->isTerminated())
         {
-            continue;
+            break;
         }
-        c = (*it);
-        break;
     }
-    *it = mTheCustomers.back();
-    c->joinThread();
-    delete c;
+
+    (*it)->joinThread();
+    mTheCustomers.erase(it);
 }
 
 void Shop::stop()
 {
-    mTheBarber->stop();
-    mTheBarber->joinThread();
+    mTheBarber.stop();
+    mTheBarber.joinThread();
 
     //Stop any remaining Customer threads
     std::lock_guard<std::mutex> lock(mShopMutex);
@@ -71,7 +68,6 @@ void Shop::stop()
     {
         it->stop();
         it->joinThread();
-        delete it;
     }
 }
 

@@ -3,12 +3,11 @@
 #include <iostream>
 #include <chrono>
 
-Barber::Barber(Shop* shop)
+Barber::Barber()
     :futureObj(exitSignal.get_future())
-    ,pBelongsToShop(shop)
 {
-    mBarberNotifier = shop->getBarberSemaphore();
-    mCustomersNotifier = shop->getCustomersSemaphore();
+    mBarberNotifier = pBelongsToShop->getBarberSemaphore();
+    mCustomersNotifier = pBelongsToShop->getCustomersSemaphore();
 
     mBarberThread = std::thread(operating, this);
 }

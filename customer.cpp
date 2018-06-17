@@ -9,8 +9,8 @@ Customer::Customer(std::string name, Shop* shop)
     ,pBelongsToShop(shop)
     ,mTerminated(false)
 {
-    mBarberNotifier = shop->getBarberSemaphore();
-    mCustomersNotifier = shop->getCustomersSemaphore();
+    //mBarberNotifier = shop->getBarberSemaphore();
+    //mCustomersNotifier = shop->getCustomersSemaphore();
     mCustomerThread = std::thread(operating, this);
 }
 
@@ -26,8 +26,8 @@ void Customer::operating()
         }
 
         pBelongsToShop->addWaitingCustomer();
-        mCustomersNotifier->Signal();
-        mBarberNotifier->Wait();
+        pBelongsToShop->getCustomersSemaphore()->Signal();
+        pBelongsToShop->getBarberSemaphore()->Wait();
         getHaircut();
         mTerminated = true;
         break;
