@@ -1,5 +1,5 @@
 #include "shop.h"
-
+#include <chrono>
 
 Shop::Shop(int mMaxChairs)
     :mMaxChairs(mMaxChairs)
@@ -12,18 +12,19 @@ Shop::Shop(int mMaxChairs)
 Shop::~Shop()
 {
     delete mTheBarber;
+    mTheCustomers.clear();
 }
 
-void Shop::newCustomerArrives(std::string customerName)
+void Shop::newCustomerArrives(Customer *newCustomer)
 {
     std::lock_guard<std::mutex> lock(mShopMutex);
-    mTheCustomers.emplace_back(new Customer(customerName, this));
+    mTheCustomers.emplace_back(newCustomer);
 }
 
 bool Shop::emptySeatsExist()
 {
     std::lock_guard<std::mutex> lock(mShopMutex);
-    return (mWaitingCustomers < mMaxChairs);
+    return ((mWaitingCustomers < mMaxChairs));
 }
 
 void Shop::addWaitingCustomer()
@@ -36,14 +37,41 @@ void Shop::removeWaitingCustomer()
 {
     std::lock_guard<std::mutex> lock(mShopMutex);
     mWaitingCustomers--;
+    clearFirstTerminatedCustomerFound();
 }
 
-void Shop::joinThreads()
+void Shop::clearFirstTerminatedCustomerFound()
 {
-    mTheBarber->joinThread();
-    for(const auto &it : mTheCustomers)
+    std::lock_guard<std::mutex> lock(mShopMutex);
+    // Check if Customers have been finished
+    auto it = mTheCustomers.begin();
+    Customer* c;
+    for (;it != mTheCustomers.end(); ++it)
     {
+        if (!((*it)->isTerminated()))
+        {
+            continue;
+        }
+        c = (*it);
+        break;
+    }
+    *it = mTheCustomers.back();
+    c->joinThread();
+    delete c;
+}
+
+void Shop::stop()
+{
+    mTheBarber->stop();
+    mTheBarber->joinThread();
+
+    //Stop any remaining Customer threads
+    std::lock_guard<std::mutex> lock(mShopMutex);
+    for (auto &it : mTheCustomers)
+    {
+        it->stop();
         it->joinThread();
+        delete it;
     }
 }
 

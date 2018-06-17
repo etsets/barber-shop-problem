@@ -6,18 +6,21 @@
 #include "customer.h"
 
 #include <iostream>
-#include <list>
+#include <vector>
 
 class Shop
 {
 public:
     Shop(int numberOfChairs);
     ~Shop();
-    void newCustomerArrives(std::string customerName);
+    void newCustomerArrives(Customer *newCustomer);
     bool emptySeatsExist();
     void addWaitingCustomer();
     void removeWaitingCustomer();
-    void joinThreads();
+
+    void clearFirstTerminatedCustomerFound();
+    void stop();
+
     Semaphore* getBarberSemaphore() { return &mBarberSemaphore; }
     Semaphore* getCustomersSemaphore() { return &mCustomersSemaphore; }
 
@@ -26,7 +29,7 @@ private:
     int mWaitingCustomers;
 
     Barber *mTheBarber;
-    std::list<Customer*> mTheCustomers;
+    std::vector<Customer*> mTheCustomers;
 
     // Synchronization objects
     Semaphore mBarberSemaphore;

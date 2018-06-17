@@ -2,6 +2,7 @@
 #define BARBER_H
 
 #include <thread>
+#include <future>
 
 class Shop;
 class Semaphore;
@@ -10,12 +11,15 @@ class Barber
 {
 public:
     Barber(Shop* shop);
-    void terminate();
     void joinThread();
+    bool stopRequested();
+    void stop();
 
 private:
     std::thread mBarberThread;
-    bool mAlive;
+
+    std::promise<void> exitSignal;
+    std::future<void> futureObj;
 
     Shop* pBelongsToShop;
     Semaphore* mBarberNotifier;

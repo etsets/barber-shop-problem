@@ -4,7 +4,7 @@
 #include <chrono>
 
 Barber::Barber(Shop* shop)
-    :mAlive(true)
+    :futureObj(exitSignal.get_future())
     ,pBelongsToShop(shop)
 {
     mBarberNotifier = shop->getBarberSemaphore();
@@ -21,7 +21,7 @@ void Barber::cutHair()
 
 void Barber::operating()
 {
-    while (mAlive)
+    while (stopRequested() == false)
     {
         mCustomersNotifier->Wait();
         pBelongsToShop->removeWaitingCustomer();
@@ -30,12 +30,21 @@ void Barber::operating()
     }
 }
 
-void Barber::terminate()
-{
-    mAlive = false;
-}
-
 void Barber::joinThread()
 {
     mBarberThread.join();
+}
+
+//Checks if thread is requested to stop
+bool Barber::stopRequested()
+{
+    // checks if value in future object is available
+    if (futureObj.wait_for(std::chrono::milliseconds(0)) == std::future_status::timeout)
+        return false;
+    return true;
+}
+// Request the thread to stop by setting value in promise object
+void Barber::stop()
+{
+    exitSignal.set_value();
 }

@@ -13,17 +13,19 @@ int main()
     int i;
     for (i = 0 ; i < 9 ; ++i)
     {
-        barberShop.newCustomerArrives(std::to_string(i));
+        Customer* newC = new Customer(std::to_string(i), &barberShop);
+        barberShop.newCustomerArrives(newC);
     }
 
     std::this_thread::sleep_for(std::chrono::seconds(5));
 
     for (; i < 15 ; ++i)
     {
-        barberShop.newCustomerArrives(std::to_string(i));
+        Customer* newC = new Customer(std::to_string(i), &barberShop);
+        barberShop.newCustomerArrives(newC);
     }
 
-    barberShop.joinThreads();
+    barberShop.stop();
 
     return 0;
 }
