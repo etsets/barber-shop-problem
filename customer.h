@@ -14,7 +14,7 @@ public:
     void joinThread();
     bool isTerminated() const { return mTerminated; }
     void stop();
-
+    const std::string &getCustomerName() const { return mCustomerName; }
 private:
     std::string mCustomerName;
     std::thread mCustomerThread;

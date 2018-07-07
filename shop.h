@@ -28,7 +28,7 @@ private:
     int mMaxChairs;
     int mWaitingCustomers;
 
-    Barber mTheBarber;
+    Barber *mTheBarber;
     std::vector<Customer*> mTheCustomers;
 
     // Synchronization objects

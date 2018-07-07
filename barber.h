@@ -10,7 +10,7 @@ class Semaphore;
 class Barber
 {
 public:
-    Barber();
+    Barber(Shop* shop);
     void joinThread();
     void stop();
     void setShop(Shop* shop) { pBelongsToShop = shop; }

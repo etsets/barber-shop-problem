@@ -3,10 +3,12 @@
 #include <iostream>
 #include <chrono>
 
-Barber::Barber()
+Barber::Barber(Shop* shop)
     :futureObj(exitSignal.get_future())
 {
     std::cout << "Barber : constructor \n";
+
+    pBelongsToShop = shop;
     mBarberNotifier = pBelongsToShop->getBarberSemaphore();
     mCustomersNotifier = pBelongsToShop->getCustomersSemaphore();
 

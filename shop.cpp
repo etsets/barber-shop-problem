@@ -8,7 +8,9 @@ Shop::Shop(int mMaxChairs)
 {
     std::cout << "Shop : - ctor \n";
     mWaitingCustomers = 0;
-    mTheBarber.setShop(this);
+
+    mTheBarber = new Barber(this);
+    //mTheBarber->setShop(this);
 }
 
 Shop::~Shop()
@@ -18,7 +20,7 @@ Shop::~Shop()
 
 void Shop::newCustomerArrives(Customer *newCustomer)
 {
-    std::cout << "Shop : - newCustomerArrives()\n";
+    std::cout << "Shop : - newCustomerArrives() " << newCustomer->getCustomerName() << "\n";
     std::lock_guard<std::mutex> lock(mShopMutex);
     mTheCustomers.emplace_back(newCustomer);
 }
@@ -66,8 +68,8 @@ void Shop::clearFirstTerminatedCustomerFound()
 
 void Shop::stop()
 {
-    mTheBarber.stop();
-    mTheBarber.joinThread();
+    mTheBarber->stop();
+    mTheBarber->joinThread();
 
     //Stop any remaining Customer threads
     std::lock_guard<std::mutex> lock(mShopMutex);
