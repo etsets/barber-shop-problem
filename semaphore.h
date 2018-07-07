@@ -8,7 +8,7 @@
 class Semaphore
 {
 public:
-    Semaphore(int initialValue);
+    Semaphore(int initialValue, std::string id);
 
     void Signal();       // Increment
     void Wait();         // Decrement
@@ -17,6 +17,7 @@ private:
     std::atomic<int> mSemaphoreValue;
     std::mutex mMutexObject;
     std::condition_variable mConditionVariable;
+    std::string mId;
 };
 
 

@@ -6,6 +6,7 @@
 Barber::Barber()
     :futureObj(exitSignal.get_future())
 {
+    std::cout << "Barber : constructor \n";
     mBarberNotifier = pBelongsToShop->getBarberSemaphore();
     mCustomersNotifier = pBelongsToShop->getCustomersSemaphore();
 

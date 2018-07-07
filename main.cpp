@@ -15,6 +15,7 @@ int main()
     {
         Customer* newC = new Customer(std::to_string(i), &barberShop);
         barberShop.newCustomerArrives(newC);
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 
     std::this_thread::sleep_for(std::chrono::seconds(5));

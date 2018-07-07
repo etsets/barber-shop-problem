@@ -3,9 +3,11 @@
 
 Shop::Shop(int mMaxChairs)
     :mMaxChairs(mMaxChairs)
-    ,mBarberSemaphore(1)
-    ,mCustomersSemaphore(0)
+    ,mBarberSemaphore(1, "Barber Semaphore")
+    ,mCustomersSemaphore(0, "Customer Semaphore")
 {
+    std::cout << "Shop : - ctor \n";
+    mWaitingCustomers = 0;
     mTheBarber.setShop(this);
 }
 
@@ -16,6 +18,7 @@ Shop::~Shop()
 
 void Shop::newCustomerArrives(Customer *newCustomer)
 {
+    std::cout << "Shop : - newCustomerArrives()\n";
     std::lock_guard<std::mutex> lock(mShopMutex);
     mTheCustomers.emplace_back(newCustomer);
 }
@@ -23,13 +26,17 @@ void Shop::newCustomerArrives(Customer *newCustomer)
 bool Shop::emptySeatsExist()
 {
     std::lock_guard<std::mutex> lock(mShopMutex);
+    std::cout << "Shop : - emptySeatsExist() - mWaitingCustomers: " << mWaitingCustomers << " mMaxChairs : " << mMaxChairs << "\n";
+
     return ((mWaitingCustomers < mMaxChairs));
 }
 
 void Shop::addWaitingCustomer()
 {
     std::lock_guard<std::mutex> lock(mShopMutex);
+
     mWaitingCustomers++;
+    std::cout << "Shop : - addWaitingCustomer()" << mWaitingCustomers << "\n";
 }
 
 void Shop::removeWaitingCustomer()
