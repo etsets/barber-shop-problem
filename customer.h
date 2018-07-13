@@ -11,14 +11,11 @@ class Customer
 {
 public:
     Customer(std::string name, Shop* shop);
-    void joinThread();
     bool isTerminated() const { return mTerminated; }
     void stop();
     const std::string &getCustomerName() const { return mCustomerName; }
 private:
     std::string mCustomerName;
-    std::thread mCustomerThread;
-
     std::promise<void> exitSignal;
     std::future<void> futureObj;
 

@@ -14,8 +14,7 @@ public:
     void Wait();         // Decrement
 
 private:
-    //std::atomic<int> mSemaphoreValue;
-    int mSemaphoreValue;
+    std::atomic<int> mSemaphoreValue;
     std::mutex mMutexObject;
     std::condition_variable mConditionVariable;
     std::string mId;

@@ -10,6 +10,8 @@ int main()
     const int chairs = 10;
     Shop barberShop(chairs);
 
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+
     int i;
     for (i = 0 ; i < 9 ; ++i)
     {

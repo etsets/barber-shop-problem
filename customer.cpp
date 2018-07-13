@@ -10,7 +10,7 @@ Customer::Customer(std::string name, Shop* shop)
     ,mTerminated(false)
 {
     std::cout << "\n\nCustomer : " << mCustomerName << " - ctor \n";
-    mCustomerThread = std::thread(operating, this);
+    operating();
 }
 
 void Customer::operating()
@@ -43,11 +43,6 @@ void Customer::getHaircut()
 void Customer::balk()
 {
     std::cout << "Customer : " << mCustomerName << " - balk()\n";
-}
-
-void Customer::joinThread()
-{
-    mCustomerThread.join();
 }
 
 //Checks if thread is requested to stop
