@@ -11,12 +11,14 @@ class Customer
 {
 public:
     Customer(std::string name, Shop* shop);
-    bool isTerminated() const { return mTerminated; }
+    ~Customer();
     const std::string &getCustomerName() const { return mCustomerName; }
+    void start();
+
 private:
     std::string mCustomerName;
     Shop* pBelongsToShop;
-    std::atomic<bool> mTerminated;
+    std::unique_ptr<std::thread> mCustomerThread;
 
     void operating();
     void getHaircut();  // Customer is served and occupies the chair

@@ -3,6 +3,7 @@
 #include <chrono>
 #include <string>
 #include <memory>
+#include <cstdlib>
 
 using namespace std;
 
@@ -17,13 +18,16 @@ int main()
     {
         Customer* newC = new Customer(std::to_string(i), &barberShop);
         customers.emplace_back(newC);
-        //std::this_thread::sleep_for(std::chrono::seconds(1));
+        newC->start();
+        int milliSecondsToWait = std::rand() % 2000;
+        std::this_thread::sleep_for(std::chrono::milliseconds(milliSecondsToWait));
     }
 
     for (; i < 15 ; ++i)
     {
         Customer* newC = new Customer(std::to_string(i), &barberShop);
         customers.emplace_back(newC);
+        newC->start();
     }
 
     std::this_thread::sleep_for(std::chrono::seconds(5));

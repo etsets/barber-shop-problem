@@ -6,10 +6,22 @@
 Customer::Customer(std::string name, Shop* shop)
     :mCustomerName(name)
     ,pBelongsToShop(shop)
-    ,mTerminated(false)
+    ,mCustomerThread(nullptr)
 {
     std::cout << "\n\nCustomer : " << mCustomerName << " - ctor \n";
-    operating();
+}
+
+Customer::~Customer()
+{
+    if (mCustomerThread)
+    {
+        mCustomerThread->join();
+    }
+}
+
+void Customer::start()
+{
+    mCustomerThread.reset(new std::thread(&Customer::operating, this));
 }
 
 void Customer::operating()
@@ -17,7 +29,6 @@ void Customer::operating()
     if (!pBelongsToShop->takeSeat(this))
     {
         balk();
-        mTerminated = true;
         return;
     }
 
@@ -25,13 +36,11 @@ void Customer::operating()
     pBelongsToShop->getCustomersSemaphore()->Signal();
     pBelongsToShop->getBarberSemaphore()->Wait();
     getHaircut();
-    mTerminated = true;
 }
 
 void Customer::getHaircut()
 {
     std::cout << "Customer : " << mCustomerName << " - getHaircut()\n";
-    //std::this_thread::sleep_for(std::chrono::seconds(3));
 }
 
 void Customer::balk()

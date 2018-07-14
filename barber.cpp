@@ -24,7 +24,7 @@ void Barber::start()
 void Barber::cutHair(Customer* c)
 {
     std::cout << "Barber : cutHair(" << c->getCustomerName() << ") \n";
-    //std::this_thread::sleep_for(std::chrono::seconds(4));
+    std::this_thread::sleep_for(std::chrono::seconds(2));
 }
 
 void Barber::operating()
