@@ -17,6 +17,7 @@ Shop::Shop(int mMaxChairs)
 Shop::~Shop()
 {
     mTheCustomers.clear();
+    delete mTheBarber;
 }
 
 bool Shop::takeSeat(Customer *c)
@@ -51,5 +52,7 @@ void Shop::stop()
 {
     mCustomersSemaphore.Signal(); //Wake up barber in order to terminate its function (is waiting for a customer)
     mTheBarber->joinThread();
+    delete mTheBarber;
+    mTheBarber = nullptr;
 }
 
