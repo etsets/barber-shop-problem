@@ -4,8 +4,8 @@
 #include <chrono>
 
 Customer::Customer(std::string name, Shop* shop)
-    :futureObj(exitSignal.get_future())
-    ,mCustomerName(name)
+    :mCustomerName(name)
+    ,futureObj(exitSignal.get_future())
     ,pBelongsToShop(shop)
     ,mTerminated(false)
 {
