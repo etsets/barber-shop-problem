@@ -9,7 +9,7 @@ using namespace std;
 
 int main()
 {
-    const int chairs = 10;
+    const int chairs = 5;
     Shop barberShop(chairs);
     std::vector< std::unique_ptr<Customer> > customers;
 

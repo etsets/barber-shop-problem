@@ -4,8 +4,6 @@
 #include "semaphore.h"
 #include "barber.h"
 #include "customer.h"
-
-#include <iostream>
 #include <vector>
 
 class Shop
@@ -22,9 +20,7 @@ public:
     Semaphore* getCustomersSemaphore() { return &mCustomersSemaphore; }
 
 private:
-    int mMaxChairs;
-    int mWaitingCustomers;
-
+    const size_t mMaxChairs;
     Barber *mTheBarber;
     std::vector<Customer*> mTheCustomers;
 

@@ -1,6 +1,7 @@
 #include "shop.h"
 #include <chrono>
 #include <algorithm>
+#include <iostream>
 
 Shop::Shop(int mMaxChairs)
     :mMaxChairs(mMaxChairs)
@@ -8,7 +9,6 @@ Shop::Shop(int mMaxChairs)
     ,mCustomersSemaphore(0, "Customer Semaphore")
 {
     std::cout << "Shop : - ctor \n";
-    mWaitingCustomers = 0;
     mTheCustomers.clear();
     mTheBarber = new Barber(this);
     mTheBarber->start();
@@ -23,13 +23,12 @@ Shop::~Shop()
 bool Shop::takeSeat(Customer *c)
 {
     std::lock_guard<std::mutex> lock(mShopMutex);
-    if (mWaitingCustomers >= mMaxChairs)
+    if (mTheCustomers.size() >= mMaxChairs)
     {
         return false;
     }
 
     mTheCustomers.emplace_back(c);
-    mWaitingCustomers++;
     return true;
 }
 
@@ -44,7 +43,6 @@ Customer* Shop::removeWaitingCustomer()
 
     Customer *c = mTheCustomers.back();
     mTheCustomers.pop_back();
-    mWaitingCustomers--;
     return c;
 }
 
