@@ -10,6 +10,7 @@ Shop::Shop(int mMaxChairs)
     mWaitingCustomers = 0;
     mTheCustomers.clear();
     mTheBarber = new Barber(this);
+    mTheBarber->start();
 }
 
 Shop::~Shop()

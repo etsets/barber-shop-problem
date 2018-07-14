@@ -12,8 +12,11 @@ Barber::Barber(Shop* shop)
     pBelongsToShop = shop;
     mBarberNotifier = pBelongsToShop->getBarberSemaphore();
     mCustomersNotifier = pBelongsToShop->getCustomersSemaphore();
+}
 
-    mBarberThread.reset(new std::thread(operating, this));
+void Barber::start()
+{
+    mBarberThread.reset(new std::thread(&Barber::operating, this));
 }
 
 void Barber::cutHair()
