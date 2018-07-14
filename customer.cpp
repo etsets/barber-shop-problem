@@ -5,7 +5,6 @@
 
 Customer::Customer(std::string name, Shop* shop)
     :mCustomerName(name)
-    ,futureObj(exitSignal.get_future())
     ,pBelongsToShop(shop)
     ,mTerminated(false)
 {
@@ -15,29 +14,24 @@ Customer::Customer(std::string name, Shop* shop)
 
 void Customer::operating()
 {
-    while (!stopRequested())
+    if (!pBelongsToShop->takeSeat(this))
     {
-        if (!pBelongsToShop->emptySeatsExist())
-        {
-            balk();
-            mTerminated = true;
-            break;
-        }
-
-        pBelongsToShop->addWaitingCustomer();
-        std::cout << "Customer : - operating... Before signal \n";
-        pBelongsToShop->getCustomersSemaphore()->Signal();
-        pBelongsToShop->getBarberSemaphore()->Wait();
-        getHaircut();
+        balk();
         mTerminated = true;
-        break;
+        return;
     }
+
+    std::cout << "Customer : - operating... Before signal \n";
+    pBelongsToShop->getCustomersSemaphore()->Signal();
+    pBelongsToShop->getBarberSemaphore()->Wait();
+    getHaircut();
+    mTerminated = true;
 }
 
 void Customer::getHaircut()
 {
     std::cout << "Customer : " << mCustomerName << " - getHaircut()\n";
-    std::this_thread::sleep_for(std::chrono::seconds(3));
+    //std::this_thread::sleep_for(std::chrono::seconds(3));
 }
 
 void Customer::balk()
@@ -45,17 +39,4 @@ void Customer::balk()
     std::cout << "Customer : " << mCustomerName << " - balk()\n";
 }
 
-//Checks if thread is requested to stop
-bool Customer::stopRequested()
-{
-    // checks if value in future object is available
-    if (futureObj.wait_for(std::chrono::milliseconds(0)) == std::future_status::timeout)
-        return false;
-    return true;
-}
-// Request the thread to stop by setting value in promise object
-void Customer::stop()
-{
-    exitSignal.set_value();
-}
 

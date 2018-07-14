@@ -13,13 +13,10 @@ class Shop
 public:
     Shop(int numberOfChairs);
     ~Shop();
-    void newCustomerArrives(Customer *newCustomer);
-    bool emptySeatsExist();
-    void addWaitingCustomer();
-    void removeWaitingCustomer();
-
-    void clearFirstTerminatedCustomerFound();
     void stop();
+    bool takeSeat(Customer *c);
+
+    Customer* removeWaitingCustomer();
 
     Semaphore* getBarberSemaphore() { return &mBarberSemaphore; }
     Semaphore* getCustomersSemaphore() { return &mCustomersSemaphore; }

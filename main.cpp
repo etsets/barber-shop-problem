@@ -2,6 +2,7 @@
 #include <iostream>
 #include <chrono>
 #include <string>
+#include <memory>
 
 using namespace std;
 
@@ -9,24 +10,23 @@ int main()
 {
     const int chairs = 10;
     Shop barberShop(chairs);
-
-    std::this_thread::sleep_for(std::chrono::seconds(3));
+    std::vector< std::unique_ptr<Customer> > customers;
 
     int i;
     for (i = 0 ; i < 9 ; ++i)
     {
         Customer* newC = new Customer(std::to_string(i), &barberShop);
-        barberShop.newCustomerArrives(newC);
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        customers.emplace_back(newC);
+        //std::this_thread::sleep_for(std::chrono::seconds(1));
     }
-
-    std::this_thread::sleep_for(std::chrono::seconds(5));
 
     for (; i < 15 ; ++i)
     {
         Customer* newC = new Customer(std::to_string(i), &barberShop);
-        barberShop.newCustomerArrives(newC);
+        customers.emplace_back(newC);
     }
+
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 
     barberShop.stop();
 

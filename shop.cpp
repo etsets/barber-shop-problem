@@ -1,5 +1,6 @@
 #include "shop.h"
 #include <chrono>
+#include <algorithm>
 
 Shop::Shop(int mMaxChairs)
     :mMaxChairs(mMaxChairs)
@@ -18,66 +19,37 @@ Shop::~Shop()
     mTheCustomers.clear();
 }
 
-void Shop::newCustomerArrives(Customer *newCustomer)
-{
-    std::cout << "Shop : - newCustomerArrives() " << newCustomer->getCustomerName() << "\n";
-    std::lock_guard<std::mutex> lock(mShopMutex);
-    mTheCustomers.emplace_back(newCustomer);
-}
-
-bool Shop::emptySeatsExist()
+bool Shop::takeSeat(Customer *c)
 {
     std::lock_guard<std::mutex> lock(mShopMutex);
-    std::cout << "Shop : - emptySeatsExist() - mWaitingCustomers: " << mWaitingCustomers << " mMaxChairs : " << mMaxChairs << "\n";
+    if (mWaitingCustomers >= mMaxChairs)
+    {
+        return false;
+    }
 
-    return ((mWaitingCustomers < mMaxChairs));
-}
-
-void Shop::addWaitingCustomer()
-{
-    std::lock_guard<std::mutex> lock(mShopMutex);
-
+    mTheCustomers.emplace_back(c);
     mWaitingCustomers++;
-    std::cout << "Shop : - addWaitingCustomer()" << mWaitingCustomers << "\n";
+    return true;
 }
 
-void Shop::removeWaitingCustomer()
+Customer* Shop::removeWaitingCustomer()
 {
     std::lock_guard<std::mutex> lock(mShopMutex);
+
+    if (mTheCustomers.empty())
+    {
+        return nullptr;
+    }
+
+    Customer *c = mTheCustomers.back();
+    mTheCustomers.pop_back();
     mWaitingCustomers--;
-    clearFirstTerminatedCustomerFound();
-}
-
-void Shop::clearFirstTerminatedCustomerFound()
-{
-    // Check if there exist any Customers have been finished
-    // and delete the first found
-    auto it = mTheCustomers.begin();
-    for (;it != mTheCustomers.end(); ++it)
-    {
-        if ((*it)->isTerminated())
-        {
-            break;
-        }
-    }
-    if (it != mTheCustomers.end())
-    {
-        mTheCustomers.erase(it);
-    }
-
-
+    return c;
 }
 
 void Shop::stop()
 {
-    mTheBarber->stop();
+    mCustomersSemaphore.Signal(); //Wake up barber in order to terminate its function (is waiting for a customer)
     mTheBarber->joinThread();
-
-    //Stop any remaining Customer threads
-    std::lock_guard<std::mutex> lock(mShopMutex);
-    for (auto &it : mTheCustomers)
-    {
-        it->stop();
-    }
 }
 
