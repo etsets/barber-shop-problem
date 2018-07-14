@@ -4,7 +4,8 @@
 #include <chrono>
 
 Barber::Barber(Shop* shop)
-    :futureObj(exitSignal.get_future())
+    :mBarberThread(nullptr)
+    ,futureObj(exitSignal.get_future())
 {
     std::cout << "Barber : constructor \n";
 
@@ -12,7 +13,7 @@ Barber::Barber(Shop* shop)
     mBarberNotifier = pBelongsToShop->getBarberSemaphore();
     mCustomersNotifier = pBelongsToShop->getCustomersSemaphore();
 
-    mBarberThread = std::thread(operating, this);
+    mBarberThread.reset(new std::thread(operating, this));
 }
 
 void Barber::cutHair()
@@ -34,7 +35,7 @@ void Barber::operating()
 
 void Barber::joinThread()
 {
-    mBarberThread.join();
+    mBarberThread->join();
 }
 
 //Checks if thread is requested to stop

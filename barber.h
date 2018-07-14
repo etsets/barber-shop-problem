@@ -3,6 +3,7 @@
 
 #include <thread>
 #include <future>
+#include <memory>
 
 class Shop;
 class Semaphore;
@@ -13,9 +14,10 @@ public:
     Barber(Shop* shop);
     void joinThread();
     void stop();
+    void start();
     void setShop(Shop* shop) { pBelongsToShop = shop; }
 private:
-    std::thread mBarberThread;
+    std::unique_ptr<std::thread> mBarberThread;
 
     std::promise<void> exitSignal;
     std::future<void> futureObj;
