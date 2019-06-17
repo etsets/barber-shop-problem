@@ -1,33 +1,34 @@
 #ifndef SHOP_H
 #define SHOP_H
 
-using namespace std;
-
-#include <iostream>
-#include <map>
-#include <mutex>
 #include "semaphore.h"
 #include "barber.h"
 #include "customer.h"
+#include <vector>
 
 class Shop
 {
 public:
     Shop(int numberOfChairs);
-    void newCustomer(std::string customerName);
-    void cleanupCustomerGarbage(std::string customerName);
+    ~Shop();
+    void stop();
+    bool takeSeat(Customer *c);
+
+    Customer* removeWaitingCustomer();
+
+    Semaphore* getBarberSemaphore() { return &mBarberSemaphore; }
+    Semaphore* getCustomersSemaphore() { return &mCustomersSemaphore; }
 
 private:
-    int mMaxChairs;
-    Barber mTheBarber;
-    int mWaitingCustomers;
-    std::map<std::string, Customer> mTheCustomers;
+    const size_t mMaxChairs;
+    Barber *mTheBarber;
+    std::vector<Customer*> mTheCustomers;
 
     // Synchronization objects
     Semaphore mBarberSemaphore;
     Semaphore mCustomersSemaphore;
-    std::mutex mWaitingCustomersMutex;
-    std::mutex mCustomersMapMutex;
+
+    std::mutex mShopMutex;
 };
 
 #endif // SHOP_H

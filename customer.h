@@ -1,23 +1,24 @@
 #ifndef CUSTOMER_H
 #define CUSTOMER_H
 
-#include <iostream>
 #include <thread>
-#include <chrono>
-
-using namespace std;
+#include <future>
 
 class Shop;
+class Semaphore;
 
 class Customer
 {
 public:
     Customer(std::string name, Shop* shop);
+    ~Customer();
+    const std::string &getCustomerName() const { return mCustomerName; }
+    void start();
 
 private:
     std::string mCustomerName;
-    std::thread mCustomerThread;
     Shop* pBelongsToShop;
+    std::unique_ptr<std::thread> mCustomerThread;
 
     void operating();
     void getHaircut();  // Customer is served and occupies the chair

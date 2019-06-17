@@ -1,28 +1,51 @@
 #include "customer.h"
 #include "shop.h"
+#include <iostream>
+#include <chrono>
 
 Customer::Customer(std::string name, Shop* shop)
     :mCustomerName(name)
     ,pBelongsToShop(shop)
+    ,mCustomerThread(nullptr)
 {
-    mCustomerThread = std::thread(operating, this);
-    mCustomerThread.join();
+    std::cout << "\n\nCustomer : " << mCustomerName << " - ctor \n";
+}
+
+Customer::~Customer()
+{
+    if (mCustomerThread)
+    {
+        mCustomerThread->join();
+    }
+}
+
+void Customer::start()
+{
+    mCustomerThread.reset(new std::thread(&Customer::operating, this));
 }
 
 void Customer::operating()
 {
+    if (!pBelongsToShop->takeSeat(this))
+    {
+        balk();
+        return;
+    }
+
+    std::cout << "Customer : - operating... Before signal \n";
+    pBelongsToShop->getCustomersSemaphore()->Signal();
+    pBelongsToShop->getBarberSemaphore()->Wait();
     getHaircut();
-    std::this_thread::sleep_for(std::chrono::seconds(1));
 }
 
 void Customer::getHaircut()
 {
-    cout << "Customer : " << mCustomerName << " - getHaircut()\n";
-    std::this_thread::sleep_for(std::chrono::seconds(3));
+    std::cout << "Customer : " << mCustomerName << " - getHaircut()\n";
 }
 
 void Customer::balk()
 {
-    cout << "Customer : " << mCustomerName << " - balk()";
+    std::cout << "Customer : " << mCustomerName << " - balk()\n";
 }
+
 

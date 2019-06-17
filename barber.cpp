@@ -1,28 +1,51 @@
 #include "barber.h"
 #include "shop.h"
+#include "customer.h"
+
+#include <iostream>
+#include <chrono>
+
 
 Barber::Barber(Shop* shop)
-    :mAlive(true)
-    ,pBelongsToShop(shop)
+    :mBarberThread(nullptr)
 {
-    mBarberThread = std::thread(operating, this);
-    mBarberThread.join();
+    std::cout << "Barber : constructor \n";
+
+    pBelongsToShop = shop;
+    mBarberNotifier = pBelongsToShop->getBarberSemaphore();
+    mCustomersNotifier = pBelongsToShop->getCustomersSemaphore();
 }
 
-void Barber::cutHair()
+void Barber::start()
 {
-    std::cout << "Barber : cutHair()\n";
+    mBarberThread.reset(new std::thread(&Barber::operating, this));
+}
+
+void Barber::cutHair(Customer* c)
+{
+    std::cout << "Barber : cutHair(" << c->getCustomerName() << ") \n";
+    std::this_thread::sleep_for(std::chrono::seconds(2));
 }
 
 void Barber::operating()
 {
-    while (mAlive)
+    for (;;)
     {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        mCustomersNotifier->Wait();
+        Customer* c = pBelongsToShop->removeWaitingCustomer();
+
+        //In case of null customer, the shop has closed, so barber terminates
+        if (c == nullptr)
+        {
+            break;
+        }
+        cutHair(c);
+        mBarberNotifier->Signal();
     }
 }
 
-void Barber::terminate()
+void Barber::joinThread()
 {
-    mAlive = false;
+    mBarberThread->join();
 }
+

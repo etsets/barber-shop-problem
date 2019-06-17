@@ -1,23 +1,37 @@
 #include "semaphore.h"
+#include <cassert>
+#include <iostream>
 
-
-Semaphore::Semaphore(int initialValue)
-    :mSemaphoreValue(initialValue)
+Semaphore::Semaphore(int initialValue, std::string id)
+    //:mSemaphoreValue(initialValue)
+    //,mId(id)
 {
-
+    mSemaphoreValue = initialValue;
+    mId = id;
+    std::cout << "Semaphore  " << mId << " : - ctor - initialValue:" << initialValue << " \n";
+    assert(initialValue >= 0);
 }
 
-void Semaphore::Increment() //Signal - Unlock
+void Semaphore::Signal() //Signal - Unlock
 {
+    std::lock_guard<std::mutex> lck(mMutexObject);
     mSemaphoreValue++;
-    mMutexObject.unlock();
+    //std::cout << "Semaphore " << mId << " : - Signal - initialValue:" << mSemaphoreValue << " \n";
+    if (mSemaphoreValue == 1)
+    {
+        mConditionVariable.notify_one();
+    }
 }
 
-void Semaphore::Decrement() //Wait - Lock
+void Semaphore::Wait() //Wait - Lock
 {
-    mSemaphoreValue--;
-    if (mSemaphoreValue < 0)
+    std::unique_lock<std::mutex> lck(mMutexObject);
+    //std::cout << "Semaphore " << mId << " :- Wait - initialValue:" << mSemaphoreValue << " \n";
+    while (mSemaphoreValue <= 0)
     {
-        mMutexObject.lock();
+        mConditionVariable.wait(lck);
     }
+
+    mSemaphoreValue--;
+    assert(mSemaphoreValue >= 0);
 }

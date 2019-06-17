@@ -1,27 +1,30 @@
 #ifndef BARBER_H
 #define BARBER_H
 
-#include <iostream>
 #include <thread>
-#include <chrono>
-
-using namespace std;
+#include <future>
+#include <memory>
 
 class Shop;
+class Semaphore;
+class Customer;
 
 class Barber
 {
 public:
     Barber(Shop* shop);
-    void terminate();
-
+    void joinThread();
+    void start();
+    void setShop(Shop* shop) { pBelongsToShop = shop; }
 private:
-    std::thread mBarberThread;
-    bool mAlive;
-    Shop* pBelongsToShop;
+    std::unique_ptr<std::thread> mBarberThread;
 
-    void cutHair();
+    Shop* pBelongsToShop;
+    Semaphore* mBarberNotifier;
+    Semaphore* mCustomersNotifier;
+
     void operating();
+    void cutHair(Customer *);
 };
 
 #endif // BARBER_H
